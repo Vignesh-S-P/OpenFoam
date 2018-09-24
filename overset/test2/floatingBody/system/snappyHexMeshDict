@@ -1,0 +1,126 @@
+/*--------------------------------*- C++ -*----------------------------------*\
+  =========                 |
+  \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
+   \\    /   O peration     | Website:  https://openfoam.org
+    \\  /    A nd           | Version:  6
+     \\/     M anipulation  |
+\*---------------------------------------------------------------------------*/
+FoamFile
+{
+    version     2.0;
+    format      ascii;
+    class       dictionary;
+    object      snappyHexMeshDict;
+}
+// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
+
+#includeEtc "caseDicts/mesh/generation/snappyHexMeshDict.cfg"
+
+castellatedMesh on;
+snap            on;
+addLayers       off;
+
+geometry
+{
+    regionSTL.stl
+    {
+        
+        type triSurfaceMesh;
+        regions
+        {
+            sides   {name sides;}
+            object  {name object;}
+        }
+    }
+
+    refinementBox
+    {
+        type searchableBox;
+        min  (-2   -2   -2);
+        max  ( 2    2    2);
+    }
+};
+
+castellatedMeshControls
+{
+    features
+    (
+      { file  "regionSTL.eMesh"; level 1; }
+    );
+
+    refinementSurfaces
+    {
+        regionSTL.stl
+        {
+            level (3 3);
+            regions
+            {
+                sides
+                {
+                    level (2 2);
+                    patchInfo
+                    {
+                        type overset;
+                    }
+                }
+                object
+                {
+                    level (2 3);
+                    patchInfo
+                    {
+                        type wall;
+                    }
+                }
+
+            }
+        }
+    }
+
+    refinementRegions
+    {
+        refinementBox
+        {
+            mode inside;
+            levels ((1E15 2));
+        }
+    }
+
+    locationInMesh (0.9 0.9 0.9);
+}
+
+snapControls
+{
+    explicitFeatureSnap    true;
+    implicitFeatureSnap    false;
+}
+
+addLayersControls
+{
+    layers
+    {
+        object
+        {
+            nSurfaceLayers 2;
+        }
+    }
+
+    relativeSizes       true;
+    expansionRatio      1.2;
+    finalLayerThickness 0.5;
+    minThickness        1e-3;
+}
+
+meshQualityControls
+{}
+
+writeFlags
+(
+    noRefinement
+    // scalarLevels
+    // layerSets
+    // layerFields
+);
+
+mergeTolerance 1e-6;
+
+// ************************************************************************* //

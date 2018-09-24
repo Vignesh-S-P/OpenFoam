@@ -1,0 +1,83 @@
+/*--------------------------------*- C++ -*----------------------------------*\
+| =========                 |                                                 |
+| \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox           |
+|  \\    /   O peration     | Version:  v1806                                 |
+|   \\  /    A nd           | Web:      www.OpenFOAM.com                      |
+|    \\/     M anipulation  |                                                 |
+\*---------------------------------------------------------------------------*/
+FoamFile
+{
+    version     2.0;
+    format      ascii;
+    class       volScalarField;
+    object      p;
+}
+// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
+
+dimensions      [0 2 -2 0 0 0 0];
+
+internalField   uniform 1e5;
+
+boundaryField
+{
+    #includeEtc "caseDicts/setConstraintTypes"
+
+    
+    stationaryWalls
+    {
+        type            zeroGradient;
+	
+    }
+    atmosphere
+    {
+        type            totalPressure;
+        p0              uniform 0;
+        U               U;
+        phi             phi;
+        rho             rho;
+        psi             none;
+        gamma           1;
+        value           uniform 0;
+    }
+    floatingObject
+    {
+        type            zeroGradient;
+	
+    }
+    oversetPatch
+    {
+        type       overset;
+        
+	
+    }
+//    left1
+//    {
+//        type            uniformTotalPressure;
+//        pressure        table
+//        (
+//            (0 10)
+//            (1 40)
+//        );
+//        p0              40; // only used for restarts
+//        U               U;
+//        phi             phi;
+//        rho             none;
+//        psi             none;
+//        gamma           1;
+//        value           uniform 40;
+//    }
+//    left1
+//    {
+//        type            zeroGradient;
+//    }
+//
+//    right1
+//    {
+//        type            fixedValue;   //calculated;
+//        value           $internalField;
+//    }
+
+    
+}
+
+// ************************************************************************* //
